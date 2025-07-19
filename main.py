@@ -4,12 +4,13 @@ from snake import Snake
 
 pygame.init()
 
-SQUARE_WIDTH = 50
-SQUARE_HEIGHT = 50
-ROWS = 10
-COLUMNS = 12
-screen_width = COLUMNS * SQUARE_WIDTH
-screen_height = ROWS * SQUARE_HEIGHT
+SQUARE_LENGTH = 30
+SCREEN_WIDTH = 600
+SCREEN_HEIGHT = 600
+FPS = 60
+
+rows = int(SCREEN_HEIGHT / SQUARE_LENGTH)
+cols = int(SCREEN_WIDTH / SQUARE_LENGTH)
 
 # Hint: Use a variable for the direction. It could be an integer with 4 possible values: 1, 2, 3, 4 where 1 is UP, 2 is DOWN, etc. 
 #       Then, when the user presses a key, change the direction variable's value.
@@ -17,23 +18,26 @@ screen_height = ROWS * SQUARE_HEIGHT
 
 class App:
     def __init__(self):
-        self.screen = pygame.display.set_mode((screen_width,screen_height))
+        self.screen = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT))
 
         self.snake = Snake()
 
     def run(self):
         clock = pygame.time.Clock()
         running = True
+        frame_counter = 0
+        movement_threshold = 30
 
         while running:
-            clock.tick(2)
+            clock.tick(FPS)
+            frame_counter += 1
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
 
             keys = pygame.key.get_pressed()
-
+        
             if keys[pygame.K_DOWN]:
                 self.snake.direction = 1
             elif keys[pygame.K_UP]:
@@ -42,34 +46,36 @@ class App:
                 self.snake.direction = 3
             elif keys[pygame.K_LEFT]:
                 self.snake.direction = 4
-                
-            self.move()
+
+            if (frame_counter % movement_threshold) == 0:    
+                self.move()
+
             self.draw()
- 
 
             pygame.display.flip()
+            
 
         pygame.quit()
 
     def draw(self):
         self.screen.fill((255, 255, 255))
 
-        for row in range(ROWS):
-            for col in range(COLUMNS):
+        for row in range(rows):
+            for col in range(cols):
                 x = self.get_x(col)
                 y = self.get_y(row)
-                pygame.draw.rect(self.screen, (0,0,0), (x, y, SQUARE_WIDTH, SQUARE_HEIGHT))
+                pygame.draw.rect(self.screen, (0,0,0), (x, y, SQUARE_LENGTH, SQUARE_LENGTH))
 
         # Get the x & y position of the snake
         x = self.get_x(self.snake.position[1])
         y = self.get_y(self.snake.position[0])
-        pygame.draw.rect(self.screen, (235,51,36), (x, y, SQUARE_WIDTH, SQUARE_HEIGHT))
+        pygame.draw.rect(self.screen, (235,51,36), (x, y, SQUARE_LENGTH, SQUARE_LENGTH))
         
     def get_x(self, col):
-        return col * SQUARE_WIDTH
+        return col * SQUARE_LENGTH
     
     def get_y(self, row):
-        return row * SQUARE_HEIGHT
+        return row * SQUARE_LENGTH
     
     def move(self):
          if self.snake.direction == 1:
