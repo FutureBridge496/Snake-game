@@ -1,16 +1,10 @@
 import pygame
 
 from snake import Snake
+from utils import *
+from apple import Apple
 
 pygame.init()
-
-SQUARE_LENGTH = 30
-SCREEN_WIDTH = 600
-SCREEN_HEIGHT = 600
-FPS = 60
-
-rows = int(SCREEN_HEIGHT / SQUARE_LENGTH)
-cols = int(SCREEN_WIDTH / SQUARE_LENGTH)
 
 # Hint: Use a variable for the direction. It could be an integer with 4 possible values: 1, 2, 3, 4 where 1 is UP, 2 is DOWN, etc. 
 #       Then, when the user presses a key, change the direction variable's value.
@@ -22,11 +16,12 @@ class App:
 
         self.snake = Snake()
 
+        self.apple = Apple(self.snake)
+
     def run(self):
         clock = pygame.time.Clock()
         running = True
         frame_counter = 0
-        movement_threshold = 30
 
         while running:
             clock.tick(FPS)
@@ -47,8 +42,14 @@ class App:
             elif keys[pygame.K_LEFT]:
                 self.snake.direction = 4
 
-            if (frame_counter % movement_threshold) == 0:    
-                self.move()
+            if (frame_counter % self.snake.movement_threshold) == 0:
+                self.snake.move()
+
+                if self.snake.is_eaten(self.apple):
+                    self.snake.eat(self.apple)
+            
+                if self.snake.is_dead():
+                    print("The snake has died.")
 
             self.draw()
 
@@ -58,34 +59,17 @@ class App:
         pygame.quit()
 
     def draw(self):
-        self.screen.fill((255, 255, 255))
-
-        for row in range(rows):
-            for col in range(cols):
-                x = self.get_x(col)
-                y = self.get_y(row)
-                pygame.draw.rect(self.screen, (0,0,0), (x, y, SQUARE_LENGTH, SQUARE_LENGTH))
-
-        # Get the x & y position of the snake
-        x = self.get_x(self.snake.position[1])
-        y = self.get_y(self.snake.position[0])
-        pygame.draw.rect(self.screen, (235,51,36), (x, y, SQUARE_LENGTH, SQUARE_LENGTH))
-        
-    def get_x(self, col):
-        return col * SQUARE_LENGTH
+        self.screen.fill((0, 0, 0))
+        self.snake.draw(self.screen)
+        self.apple.draw(self.screen)
     
-    def get_y(self, row):
-        return row * SQUARE_LENGTH
-    
-    def move(self):
-         if self.snake.direction == 1:
-            self.snake.position[0] += 1
-         elif self.snake.direction == 2:
-            self.snake.position[0] -= 1
-         elif self.snake.direction == 3:
-            self.snake.position[1] += 1
-         elif self.snake.direction == 4:
-            self.snake.position[1] -= 1
+        # Add the previous head position to the body.
+
+        # Make sure the body is the current length.
+
+        # Body Length: 2
+        # [x, x, x, x, x]
+        # I have to remove the first "3"
 
 if __name__ == "__main__":
     app = App()
