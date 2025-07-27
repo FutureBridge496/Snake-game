@@ -47,11 +47,14 @@ class App:
 
                 if self.snake.is_eaten(self.apple):
                     self.snake.eat(self.apple)
-            
-                if self.snake.is_dead():
-                    print("The snake has died.")
 
-            self.draw()
+                if self.snake.is_dead():
+                    self.snake.alive = False
+                    
+            if not self.snake.alive:
+                self.draw_game_over_screen()
+            else:
+                self.draw()
 
             pygame.display.flip()
             
@@ -70,6 +73,25 @@ class App:
         # Body Length: 2
         # [x, x, x, x, x]
         # I have to remove the first "3"
+
+    def draw_game_over_screen(self):
+        self.screen.fill((255, 255, 255))
+
+        title_font = pygame.font.SysFont(None, 96)
+        title_render = title_font.render("GAME OVER", False, (0, 0, 0))
+
+        title_x = (SCREEN_WIDTH / 2) - (title_render.get_width() / 2)
+        title_y = 200
+        self.screen.blit(title_render, (title_x, title_y))
+
+        score = f"Score: {self.snake.body_length - 1} "
+
+        score_font = pygame.font.SysFont(None, 30)
+        score_render = score_font.render(score, False, (237, 28, 36))
+
+        score_x = (SCREEN_WIDTH / 2) - (score_render.get_width() / 2)
+        score_y = 300
+        self.screen.blit(score_render, (score_x, score_y))
 
 if __name__ == "__main__":
     app = App()

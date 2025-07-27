@@ -15,6 +15,7 @@ class Snake:
         self.body_length = 1
         self.body = [] # (Row, Column), (Row, Column), (Row, Column)
         self.movement_threshold = 30
+        self.alive = True
 
     def draw(self, screen):
         # Get the x & y position of the snake
@@ -30,6 +31,9 @@ class Snake:
             pygame.draw.rect(screen, (235, 51, 36), (body_x, body_y, SQUARE_LENGTH, SQUARE_LENGTH))
 
     def move(self):
+        if not self.alive:
+            return
+
         self.body.append(list(self.head))
 
         if len(self.body) > self.body_length:
